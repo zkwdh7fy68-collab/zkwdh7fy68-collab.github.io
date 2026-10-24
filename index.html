@@ -36,10 +36,26 @@
       line.classList.remove('is-typing');
     });
   };
-  // The full heading stays readable without JavaScript or with reduced motion.
   if (motion.matches || lines.length !== 2) return;
   lines.forEach(line => { line.textContent = ''; });
   let row = 0, character = 0;
+  const erase = () => {
+    const line = lines[row];
+    line.classList.add('is-typing');
+    line.textContent = phrases[row].slice(0, --character);
+    if (character > 0) {
+      timer = setTimeout(erase, 35);
+    } else {
+      line.classList.remove('is-typing');
+      if (row > 0) {
+        row--;
+        character = phrases[row].length;
+        timer = setTimeout(erase, 35);
+      } else {
+        type();
+      }
+    }
+  };
   const type = () => {
     const line = lines[row];
     line.classList.add('is-typing');
@@ -54,7 +70,8 @@
         type();
       }, 400);
     } else {
-      timer = setTimeout(finish, 700);
+      line.classList.remove('is-typing');
+      timer = setTimeout(erase, 6000);
     }
   };
   timer = setTimeout(type, 200);
